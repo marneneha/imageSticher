@@ -4,12 +4,11 @@ import matplotlib.pyplot as plt
 from cv_bridge import CvBridge
 import math
 import glob
-# import imutils
 
 image_paths = glob.glob('problem_2_images/*.jpg')
 images = []
 sift = cv2.SIFT_create()
-for image in range(len(image_paths)-1):
+for image in range(0, len(image_paths)-1):
     img1 = cv2.imread(image_paths[image])
     img2 = cv2.imread(image_paths[image+1])
     img1 = cv2.resize(img1, (0, 0), fx = 0.2, fy = 0.2)
@@ -35,9 +34,9 @@ for image in range(len(image_paths)-1):
     keypoints2=np.float32([keypoint.pt for keypoint in keypoints2])
     if len(raw_matches) > 4:
     # construct the two sets of points
-        points_train = np.float32([keypoints1[m.queryIdx] for m in raw_matches])
-        points_query = np.float32([keypoints2[m.trainIdx] for m in raw_matches])
-        (Homography_matrix, status) = cv2.findHomography(points_train, points_query, cv2.RANSAC, 4)
+        points1 = np.float32([keypoints1[m.queryIdx] for m in raw_matches])
+        points2 = np.float32([keypoints2[m.trainIdx] for m in raw_matches])
+        (Homography_matrix, status) = cv2.findHomography(points1, points2, cv2.RANSAC)
     print(Homography_matrix)
     width = 2*img1.shape[1]
     hieght = img1.shape[0]
