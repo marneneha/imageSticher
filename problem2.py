@@ -51,20 +51,27 @@ cv2.imshow('stitched_image', cropped_stiched_img)
 
 keypoints3, descriptors3 = sift.detectAndCompute(img3, None)
 keypoints12, descriptors12 = sift.detectAndCompute(cropped_stiched_img, None)
+bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)
 best_matches123 = bf.match(descriptors3, descriptors12)
 raw_matches123 = sorted(best_matches123, key = lambda x:x.distance)
 keypoints12=np.float32([keypoint.pt for keypoint in keypoints12])
 keypoints3=np.float32([keypoint.pt for keypoint in keypoints3])
-
 # construct the two sets of points
 points3 = np.float32([keypoints3[m.queryIdx] for m in raw_matches123])
 points12 = np.float32([keypoints12[m.trainIdx] for m in raw_matches123])
 (Homography_matrix123, status) = cv2.findHomography(points12, points3, cv2.RANSAC)
 stitched_img_src123 = cv2.warpPerspective(cropped_stiched_img, Homography_matrix123, (width, hieght))
-dst3 = cv2.warpAffine(img3, M1, (width, hieght))
-dst123 = cv2.add(dst3, stitched_img_src123)
-dst_target123 = np.maximum(dst3, stitched_img_src123)
-cropped_stiched_img1 = black_edge_remove(dst_target123)
+cv2.imshow('stitched_img_src123 here', stitched_img_src123)
+stitched_img_src123[:img3.shape[0], :img3.shape[1]] = img3
+cv2.imshow('stitched_img_src123', stitched_img_src123)
+cropped_stiched_img1 = black_edge_remove(stitched_img_src123)
+
+# dst3 = cv2.warpAffine(img3, M1, (width, hieght))
+# dst123 = cv2.add(dst3, stitched_img_src123)
+# dst_target123 = np.maximum(dst3, stitched_img_src123)
+# cropped_stiched_img1 = black_edge_remove(dst_target123)
+cv2.imshow('cropped_stiched_img', cropped_stiched_img)
+cv2.imshow('img3', img3)
 cv2.imshow('stitched_image1', cropped_stiched_img1)
 
 cv2.waitKey(0)
